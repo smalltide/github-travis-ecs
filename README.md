@@ -28,8 +28,13 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [ ] Integration Github and Travis CI
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
-### CD Task List
+### CD Task List (ECS)
 - [ ] AWS ECS create AP Task Definition
 - [ ] AWS CLI create-service and run-task to run container
 - [ ] AWS ECS update AP Task Definition
-- [ ] AWS CLI update-service and run-task to run container 
+- [ ] AWS CLI update-service and run-task to run container
+### CD Task List (Batch)
+- [ ] AWS Batch create Compute Environment
+- [ ] AWS Batch create Job Queue
+- [ ] AWS Batch create AP Job Definition
+- [ ] AWS CLI schedule AP Job into Job Queue
