@@ -13,17 +13,15 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 ### AWS Environment Config Task List
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
 - [x] AWS VPC create Security Group
-- [x] AWS EC2 create Load Balancer(?)
+- [x] AWS EC2 create Load Balancer
 - [x] AWS IAM Role create ecsInstanceRole (for EC2)
 - [x] AWS IAM Role create ecsServiceRole (for ECS)
 - [x] AWS IAM Role create batchServiceRole (for Batch)
 - [x] AWS ECR create AP Image Repository
-
 ### AWS ECS Environment Config Task List
 - [x] AWS ECS create AP Cluster
 - [x] AWS S3 upload ECS cluster config (for ECS)
 - [x] AWS EC2 create 3 instance for ECS cluster (for ECS)
-
 ### AWS Batch Environment Config Task List
 - [x] AWS Batch create Compute Environment (for Batch)
 - [x] AWS Batch create Job Queue (for Batch)
@@ -49,16 +47,16 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 ## AWS Environment Config Task List
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
 - [x] AWS VPC create Security Group
-- [x] AWS EC2 create Load Balancer(?)
+- [x] AWS EC2 create Load Balancer
 - [x] AWS IAM Role create ecsInstanceRole (for EC2)
 - [x] AWS IAM Role create ecsServiceRole (for ECS)
 - [x] AWS IAM Role create batchServiceRole (for Batch)
-
 - [x] AWS ECR create AP Image Repository
 
 AWS EC2 create Key Pairs for EC2 ssh login
 ```
   > aws ec2 create-key-pair --key-name aws-ap --query 'KeyMaterial' --output text > ~/.ssh/aws-ap.pem
+  > chmod 400 ~/.ssh/aws-ap.pem
 ```
 AWS VPC create Security Group
 ```
@@ -66,12 +64,12 @@ AWS VPC create Security Group
 ```
 AWS EC2 create Load Balancer
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws elb create-load-balancer --cli-input-json file://ap-load-balancer.json
 ```
 AWS IAM Role create ecsInstanceRole (for EC2)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws iam create-role --role-name ap-ecsInstanceRole --description ap-ecsInstanceRole --assume-role-policy-document file://ec2-role.json
   > aws iam attach-role-policy --role-name ap-ecsInstanceRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
   > aws iam attach-role-policy --role-name ap-ecsInstanceRole --policy-arn arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
@@ -80,13 +78,13 @@ AWS IAM Role create ecsInstanceRole (for EC2)
 ```
 AWS IAM Role create ecsServiceRole (for ECS)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws iam create-role --role-name ap-ecsServiceRole --description ap-ecsServiceRole --assume-role-policy-document file://ecs-role.json
   > aws iam attach-role-policy --role-name ap-ecsServiceRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
 ```
 AWS IAM Role create batchServiceRole (for Batch)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws iam create-role --role-name ap-batchServiceRole --description ap-batchServiceRole --assume-role-policy-document file://batch-role.json
   > aws iam attach-role-policy --role-name ap-batchServiceRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
 ```
@@ -97,23 +95,24 @@ AWS ECR create AP Image Repository
 ```
 
 ## AWS ECS Environment Config Task List
-- [x] AWS ECS create AP Cluster
+- [x] AWS ECS create AP Cluster (for ECS)
 - [x] AWS S3 upload ECS cluster config (for ECS)
 - [x] AWS EC2 create 3 instance for ECS cluster (for ECS)
 
-AWS ECS create AP Cluster
+AWS ECS create AP Cluster (for ECS)
 ```
   > aws ecs create-cluster --cluster-name ap
 ```
-AWS S3 upload ECS cluster config
+AWS S3 upload ECS cluster config (for ECS)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws s3api create-bucket --bucket ap-cluster --region ap-northeast-1 --create-bucket-configuration LocationConstraint=ap-northeast-1
   > aws s3 cp ecs.config s3://ap-cluster/ecs.config
 ```
-AWS EC2 create 3 instance for ECS cluster
+AWS EC2 create 3 instance for ECS cluster (for ECS)
 ```
-  > aws ec2 run-instances --image-id ami-21815747 --count 3 --instance-type t2.micro --iam-instance-profile Name=ap-ecsInstanceRole --key-name aws-ap --security-group-ids sg-a14a44c7 --user-data file://copy-ecs-config-from-s3
+  > cd env
+  > aws ec2 run-instances --cli-input-json file://ap-ecs-cluster.json --user-data file://copy-ecs-config-from-s3
 ```
 
 ## AWS Batch Environment Config Task List
@@ -122,11 +121,11 @@ AWS EC2 create 3 instance for ECS cluster
 
 AWS Batch create Compute Environment (for Batch)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws batch create-compute-environment --cli-input-json file://ap-compute-environment.json
 ```
 AWS Batch create Job Queue (for Batch)
 ```
-  > cd github-travis-ecs
+  > cd env
   > aws batch create-job-queue --cli-input-json file://ap-queue.json
 ```
