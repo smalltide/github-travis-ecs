@@ -1,0 +1,27 @@
+{
+  "computeEnvironmentName": "ap-compute-environment",
+  "type": "MANAGED",
+  "state": "ENABLED",
+  "computeResources": {
+    "type": "EC2",
+    "minvCpus": 2,
+    "maxvCpus": 8,
+    "desiredvCpus": 2,
+    "instanceTypes": [
+      "optimal"
+    ],
+    "subnets": [
+      "subnet-a03539d6",
+      "subnet-7629642e"
+    ],
+    "securityGroupIds": [
+      "sg-a14a44c7"
+    ],
+    "ec2KeyPair": "aws-ap",
+    "instanceRole": "ap-ecsInstanceRole",
+    "tags": {
+      "Name": "ap-compute-environment"
+    }
+  },
+  "serviceRole": "ap-batchServiceRole"
+}

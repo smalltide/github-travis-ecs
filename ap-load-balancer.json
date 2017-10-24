@@ -1,0 +1,24 @@
+{
+  "LoadBalancerName": "ap-load-balancer",
+  "Listeners": [
+    {
+      "Protocol": "HTTP",
+      "LoadBalancerPort": 80,
+      "InstanceProtocol": "HTTP",
+      "InstancePort": 80
+    }
+  ],
+  "Subnets": [
+    "subnet-a03539d6",
+    "subnet-7629642e"
+  ],
+  "SecurityGroups": [
+    "sg-a14a44c7"
+  ],
+  "Tags": [
+    {
+      "Key": "Name",
+      "Value": "ap-load-balancer"
+    }
+  ]
+}
