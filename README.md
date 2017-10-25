@@ -26,11 +26,11 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS Batch create Compute Environment (for Batch)
 - [x] AWS Batch create Job Queue (for Batch)
 ### Local Dev Task List
-- [ ] Python Image Dcokerfile
-- [ ] Local Test Build AP Docker Image
-- [ ] Local Test Run AP Docker Image
-- [ ] Push AP code and Dockerfile to GitHub
+- [x] Python Image Dcokerfile
+- [x] Local Test Build AP Docker Image
+- [x] Local Test Run AP Docker Image
 ### Travis CI Task List
+- [ ] Push tag AP on GitHub
 - [ ] Integration Github and Travis CI
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
@@ -128,4 +128,18 @@ AWS Batch create Job Queue (for Batch)
 ```
   > cd env
   > aws batch create-job-queue --cli-input-json file://ap-queue.json
+```
+### Local Dev Task List
+- [x] Python Image Dcokerfile
+- [x] Local Test Build AP Docker Image
+- [x] Local Test Run AP Docker Image
+
+Local Test Build AP Docker Image
+```
+  > cd github-travis-ecs
+  > docker build -t ap0001 .
+```
+Local Test Run AP Docker Image
+```
+  > docker run --rm ap0001
 ```
