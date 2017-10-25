@@ -1,0 +1,11 @@
+{
+  "jobDefinitionName": "ap0001",
+  "type": "container",
+  "containerProperties": {
+    "image": "282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest",
+    "vcpus": 1,
+    "memory": 1024,
+    "environment": [],
+    "ulimits": []
+  }
+}

@@ -29,19 +29,23 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] Python Image Dcokerfile
 - [x] Local Test Build AP Docker Image
 - [x] Local Test Run AP Docker Image
+- [x] Push AP Image to ECR
+- [x] AWS Batch CLI create AP Job Definition
+- [x] AWS Batch CLI schedule AP Job into Job Queue
+
 ### Travis CI Task List
 - [ ] Push tag AP on GitHub
 - [ ] Integration Github and Travis CI
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
-### CD Task List (ECS)
-- [ ] AWS ECS create AP Task Definition
-- [ ] AWS CLI create-service and run-task to run container
-- [ ] AWS ECS update AP Task Definition
-- [ ] AWS CLI update-service and run-task to run container
-### CD Task List (Batch)
-- [ ] AWS Batch create AP Job Definition
-- [ ] AWS CLI schedule AP Job into Job Queue
+### Travis CD Task List (Batch)
+- [ ] AWS Batch CLI create AP Job Definition
+- [ ] AWS Batch CLI schedule AP Job into Job Queue
+### Travis CD Task List (ECS)
+- [ ] AWS ECS CLI create AP Task Definition
+- [ ] AWS ECS CLI create-service and run-task to run container
+- [ ] AWS ECS CLI update AP Task Definition
+- [ ] AWS ECS CLI update-service and run-task to run container
 
 
 ## AWS Environment Config Task List
@@ -133,13 +137,32 @@ AWS Batch create Job Queue (for Batch)
 - [x] Python Image Dcokerfile
 - [x] Local Test Build AP Docker Image
 - [x] Local Test Run AP Docker Image
+- [x] Push AP Image to ECR
+- [x] AWS Batch CLI create AP Job Definition
+- [x] AWS Batch CLI schedule AP Job into Job Queue
 
 Local Test Build AP Docker Image
 ```
   > cd github-travis-ecs
-  > docker build -t ap0001 .
+  > docker build -t ap/ap0001 .
 ```
 Local Test Run AP Docker Image
 ```
-  > docker run --rm ap0001
+  > docker run --rm ap/ap0001
+```
+Push AP Image to ECR
+```
+  > eval $(aws ecr get-login --no-include-email --region ap-northeast-1)
+  > docker tag ap/ap0001:latest 282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest
+  > docker push 282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest
+```
+AWS Batch CLI create AP Job Definition
+```
+  > cd github-travis-ecs 
+  > aws batch register-job-definition --cli-input-json file://definition.json
+```
+AWS Batch CLI schedule AP Job into Job Queue
+```
+  > cd github-travis-ecs 
+  > aws batch submit-job --cli-input-json file://job.json
 ```

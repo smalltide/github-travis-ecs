@@ -1,0 +1,7 @@
+{
+    "jobName": "ap0001",
+    "jobQueue": "ap-queue",
+    "jobDefinition": "ap0001",
+    "dependsOn": [
+    ]
+}
