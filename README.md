@@ -32,20 +32,24 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] Push AP Image to ECR
 - [x] AWS Batch CLI create AP Job Definition
 - [x] AWS Batch CLI schedule AP Job into Job Queue
-
+- [x] AWS ECS CLI create AP Task Definition
+- [x] AWS ECS CLI run-task to run container
+- [x] AWS ECS CLI create-service to run container
+- [x] AWS ECS CLI update-service to re-run container
 ### Travis CI Task List
-- [ ] Push tag AP on GitHub
 - [ ] Integration Github and Travis CI
+- [ ] Push AP to GitHub
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
+
 ### Travis CD Task List (Batch)
 - [ ] AWS Batch CLI create AP Job Definition
 - [ ] AWS Batch CLI schedule AP Job into Job Queue
 ### Travis CD Task List (ECS)
 - [ ] AWS ECS CLI create AP Task Definition
-- [ ] AWS ECS CLI create-service and run-task to run container
-- [ ] AWS ECS CLI update AP Task Definition
-- [ ] AWS ECS CLI update-service and run-task to run container
+- [ ] AWS ECS CLI run-task to run container
+- [ ] AWS ECS CLI create-service to run container
+- [ ] AWS ECS CLI update-service to re-run container
 
 
 ## AWS Environment Config Task List
@@ -133,13 +137,18 @@ AWS Batch create Job Queue (for Batch)
   > cd env
   > aws batch create-job-queue --cli-input-json file://ap-queue.json
 ```
-### Local Dev Task List
+
+## Local Dev Task List
 - [x] Python Image Dcokerfile
 - [x] Local Test Build AP Docker Image
 - [x] Local Test Run AP Docker Image
 - [x] Push AP Image to ECR
 - [x] AWS Batch CLI create AP Job Definition
 - [x] AWS Batch CLI schedule AP Job into Job Queue
+- [x] AWS ECS CLI create AP Task Definition
+- [x] AWS ECS CLI run-task to run container
+- [x] AWS ECS CLI create-service to run container
+- [x] AWS ECS CLI update-service to re-run container
 
 Local Test Build AP Docker Image
 ```
@@ -165,4 +174,37 @@ AWS Batch CLI schedule AP Job into Job Queue
 ```
   > cd github-travis-ecs 
   > aws batch submit-job --cli-input-json file://job.json
+```
+AWS ECS CLI create AP Task Definition
+```
+  > cd github-travis-ecs 
+  > aws ecs register-task-definition --cli-input-json file://ecs-definition.json
+```
+AWS ECS CLI run-task to run container
+```
+  > cd github-travis-ecs 
+  > aws ecs run-task --cli-input-json file://ecs-job.json
+```
+AWS ECS CLI create-service to run container
+```
+  > cd github-travis-ecs 
+  > aws ecs create-service --cli-input-json file://ecs-service.json
+```
+AWS ECS CLI update-service to re-run container
+```
+  > cd github-travis-ecs 
+  > aws ecs update-service --cluster ap --service ap0001 --task-definition ap0001 --desired-count 1
+``` 
+
+## Travis CI Task List
+- [ ] Integration Github and Travis CI
+- [ ] Push AP to GitHub
+- [ ] Travis CI build AP Docker Image
+- [ ] Travis CI push AP Docker Image to AWS ECR
+
+Integration Github and Travis CI
+```
+  >
+  >
+  >
 ```

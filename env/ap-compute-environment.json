@@ -5,10 +5,11 @@
   "computeResources": {
     "type": "EC2",
     "minvCpus": 2,
-    "maxvCpus": 8,
+    "maxvCpus": 36,
     "desiredvCpus": 2,
     "instanceTypes": [
-      "optimal"
+      "c4.large",
+      "c4.xlarge"
     ],
     "subnets": [
       "subnet-a03539d6",

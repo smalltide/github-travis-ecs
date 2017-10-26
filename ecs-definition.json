@@ -1,0 +1,11 @@
+{
+  "containerDefinitions": [
+    {
+      "name": "ap0001",
+      "image": "282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest",
+      "cpu": 512,
+      "memory": 512
+    }
+  ],
+  "family": "ap0001"
+}

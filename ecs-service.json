@@ -1,0 +1,10 @@
+{
+  "cluster": "ap",
+  "serviceName": "ap0001",
+  "taskDefinition": "ap0001",
+  "desiredCount": 1,
+  "deploymentConfiguration": {
+    "maximumPercent": 100,
+    "minimumHealthyPercent": 0
+  }
+}
