@@ -51,6 +51,9 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 ### Travis CD Task List (Batch)
 - [ ] AWS Batch CLI create AP Job Definition
 - [ ] AWS Batch CLI schedule AP Job into Job Queue
+### Travis CD Task List (Lambda)
+- [ ] CloudWatch schedule event config(cron)
+- [ ] AWS Lambda trigger AP Cron Job
 ### Travis CD Task List (ECS)
 - [ ] AWS ECS CLI create AP Task Definition
 - [ ] AWS ECS CLI run-task to run container
