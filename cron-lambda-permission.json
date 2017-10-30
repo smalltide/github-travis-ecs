@@ -1,0 +1,7 @@
+{
+  "FunctionName": "TriggerBatchAPJob",
+  "StatementId": "ap0001-scheduled-event",
+  "Action": "lambda:InvokeFunction",
+  "Principal": "events.amazonaws.com",
+  "SourceArn": "arn:aws:events:ap-northeast-1:282921537141:rule/ap0001"
+}

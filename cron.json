@@ -1,0 +1,6 @@
+{
+  "Name": "ap0001",
+  "ScheduleExpression": "cron(0/1 * * * ? *)",
+  "State": "ENABLED",
+  "Description": "ap0001-CronJob"
+}

@@ -14,9 +14,11 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
 - [x] AWS VPC create Security Group
 - [x] AWS EC2 create Load Balancer
-- [x] AWS IAM Role create ecsInstanceRole (for EC2)
-- [x] AWS IAM Role create ecsServiceRole (for ECS)
-- [x] AWS IAM Role create batchServiceRole (for Batch)
+- [x] AWS IAM Role create ap-ecsInstanceRole (for EC2)
+- [x] AWS IAM Role create ap-ecsServiceRole (for ECS)
+- [x] AWS IAM Role create ap-ecsEventsRole (for ECS Scheduled)
+- [x] AWS IAM Role create ap-batchServiceRole (for Batch)
+- [x] AWS IAM Role create ap-lambdaBatchRole (for Lambda)
 - [x] AWS ECR create AP Image Repository
 ### AWS ECS Environment Config Task List
 - [x] AWS ECS create AP Cluster
@@ -36,6 +38,10 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS ECS CLI run-task to run container
 - [x] AWS ECS CLI create-service to run container
 - [x] AWS ECS CLI update-service to re-run container
+### AWS Lambda trigger cron job
+- [x] CloudWatch schedule event config(cron)
+- [x] AWS Lambda trigger AP Cron Job
+
 ### Travis CI Task List
 - [ ] Integration Github and Travis CI
 - [ ] Push AP to GitHub
@@ -56,9 +62,11 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
 - [x] AWS VPC create Security Group
 - [x] AWS EC2 create Load Balancer
-- [x] AWS IAM Role create ecsInstanceRole (for EC2)
-- [x] AWS IAM Role create ecsServiceRole (for ECS)
-- [x] AWS IAM Role create batchServiceRole (for Batch)
+- [x] AWS IAM Role create ap-ecsInstanceRole (for EC2)
+- [x] AWS IAM Role create ap-ecsServiceRole (for ECS)
+- [x] AWS IAM Role create ap-ecsEventsRole (for ECS Scheduled)
+- [x] AWS IAM Role create ap-batchServiceRole (for Batch)
+- [x] AWS IAM Role create ap-lambdaBatchRole (for Lambda)
 - [x] AWS ECR create AP Image Repository
 
 AWS EC2 create Key Pairs for EC2 ssh login
@@ -75,7 +83,7 @@ AWS EC2 create Load Balancer
   > cd env
   > aws elb create-load-balancer --cli-input-json file://ap-load-balancer.json
 ```
-AWS IAM Role create ecsInstanceRole (for EC2)
+AWS IAM Role create ap-ecsInstanceRole (for EC2)
 ```
   > cd env
   > aws iam create-role --role-name ap-ecsInstanceRole --description ap-ecsInstanceRole --assume-role-policy-document file://ec2-role.json
@@ -84,17 +92,30 @@ AWS IAM Role create ecsInstanceRole (for EC2)
   > aws iam create-instance-profile --instance-profile-name ap-ecsInstanceRole
   > aws iam add-role-to-instance-profile --role-name ap-ecsInstanceRole --instance-profile-name ap-ecsInstanceRole
 ```
-AWS IAM Role create ecsServiceRole (for ECS)
+AWS IAM Role create ap-ecsServiceRole (for ECS)
 ```
   > cd env
   > aws iam create-role --role-name ap-ecsServiceRole --description ap-ecsServiceRole --assume-role-policy-document file://ecs-role.json
   > aws iam attach-role-policy --role-name ap-ecsServiceRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole
 ```
-AWS IAM Role create batchServiceRole (for Batch)
+AWS IAM Role create ap-ecsEventsRole (for ECS Scheduled)
+```
+  > cd env
+  > aws iam create-role --role-name ap-ecsEventsRole --description ap-ecsEventsRole --assume-role-policy-document file://ecs-events-role.json
+  > aws iam attach-role-policy --role-name ap-ecsEventsRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceEventsRole
+```
+AWS IAM Role create ap-batchServiceRole (for Batch)
 ```
   > cd env
   > aws iam create-role --role-name ap-batchServiceRole --description ap-batchServiceRole --assume-role-policy-document file://batch-role.json
   > aws iam attach-role-policy --role-name ap-batchServiceRole --policy-arn arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+```
+AWS IAM Role create ap-lambdaBatchRole (for Lambda)
+```
+  > cd env
+  > aws iam create-role --role-name ap-lambdaBatchRole --description ap-lambdaBatchRole --assume-role-policy-document file://lambda-batch-role.json
+  > aws iam attach-role-policy --role-name ap-lambdaBatchRole --policy-arn arn:aws:iam::aws:policy/AWSBatchFullAccess
+  > aws iam attach-role-policy --role-name ap-lambdaBatchRole --policy-arn arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
 ```
 AWS ECR create AP Image Repository
 ```
@@ -196,15 +217,17 @@ AWS ECS CLI update-service to re-run container
   > aws ecs update-service --cluster ap --service ap0001 --task-definition ap0001 --desired-count 1
 ``` 
 
-## Travis CI Task List
-- [ ] Integration Github and Travis CI
-- [ ] Push AP to GitHub
-- [ ] Travis CI build AP Docker Image
-- [ ] Travis CI push AP Docker Image to AWS ECR
+## AWS Lambda trigger cron job
+- [x] CloudWatch schedule event config(cron)
+- [x] AWS Lambda trigger AP Cron Job
 
-Integration Github and Travis CI
+CloudWatch schedule event config(cron)
 ```
-  >
-  >
-  >
+  > cd github-travis-ecs 
+  > aws events put-rule --cli-input-json file://cron.json
+```
+AWS Lambda trigger AP Cron Job
+```
+  > aws lambda add-permission --cli-input-json file://cron-lambda-permission.json
+  > aws events put-targets --cli-input-json file://cron-lambda-target.json
 ```

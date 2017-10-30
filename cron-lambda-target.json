@@ -1,0 +1,9 @@
+{
+  "Rule": "ap0001",
+  "Targets": [
+    {
+      "Id": "ap0001",
+      "Arn": "arn:aws:lambda:ap-northeast-1:282921537141:function:TriggerBatchAPJob"
+    }
+  ]
+}
