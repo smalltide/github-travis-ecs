@@ -8,7 +8,10 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 4. AWS
 5. AWS ECR
 6. AWS ECS
-7. AWS S3
+7. AWS Btch
+8. AWS CloudWatch
+9. AWS Lambda
+10. AWS S3
 
 ### AWS Environment Config Task List
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
@@ -38,16 +41,20 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS ECS CLI run-task to run container
 - [x] AWS ECS CLI create-service to run container
 - [x] AWS ECS CLI update-service to re-run container
-### AWS Lambda trigger cron job
+### AWS Lambda Trigger Cronjob
 - [x] CloudWatch schedule event config(cron)
 - [x] AWS Lambda trigger AP Cron Job
+
+### AWS CloudFormation Build AP Environment 
+- [ ] AWS CloudFormation create AP Compute environments
+- [ ] AWS CloudFormation create AP Job queues
+- [ ] AWS CloudFormation create AP Job definitions
 
 ### Travis CI Task List
 - [ ] Integration Github and Travis CI
 - [ ] Push AP to GitHub
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
-
 ### Travis CD Task List (Batch)
 - [ ] AWS Batch CLI create AP Job Definition
 - [ ] AWS Batch CLI schedule AP Job into Job Queue
@@ -220,7 +227,7 @@ AWS ECS CLI update-service to re-run container
   > aws ecs update-service --cluster ap --service ap0001 --task-definition ap0001 --desired-count 1
 ``` 
 
-## AWS Lambda trigger cron job
+## AWS Lambda Trigger Cronjob
 - [x] CloudWatch schedule event config(cron)
 - [x] AWS Lambda trigger AP Cron Job
 
@@ -233,4 +240,16 @@ AWS Lambda trigger AP Cron Job
 ```
   > aws lambda add-permission --cli-input-json file://cron-lambda-permission.json
   > aws events put-targets --cli-input-json file://cron-lambda-target.json
+```
+
+## AWS CloudFormation Build AP Environment 
+- [ ] AWS CloudFormation create AP Compute environments
+- [ ] AWS CloudFormation create AP Job queues
+- [ ] AWS CloudFormation create AP Job definitions
+
+AWS CloudFormation create AP Compute environments
+```
+  >
+  >
+  >
 ```
