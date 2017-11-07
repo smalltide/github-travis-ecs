@@ -4,186 +4,163 @@ Description: Build AWS Batch environment
 #========VPC========#
 Resources:
 # Create VPC
-  MyVPC:
+  APVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: 192.168.0.0/22
       EnableDnsSupport: 'true'
       EnableDnsHostnames: 'true'
       InstanceTenancy: default
       Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"vpc" ] ]
+        - Key: Name
+          Value: !Join [ "-", [ "ap" ,"vpc" ] ]
+        
 # Create Public RouteTable
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref MyVPC
+      VpcId: !Ref APVPC
       Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"pub-route" ] ]
-# Create Private RouteTable
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref MyVPC
-      Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"pri-route" ] ]
+        - Key: Name
+          Value: !Join [ "-", [ "ap" ,"public-route" ] ]
+
 # Create Public Subnet A
   PublicSubnetA:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref APVPC
+      CidrBlock: 192.168.0.0/24
       MapPublicIpOnLaunch: 'true'
       AvailabilityZone: "ap-northeast-1a"
       Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"PublicSunetA" ] ]
+        - Key: Name
+          Value: !Join [ "-", [ "ap" ,"PublicSubnetA" ] ]
   PubSubnetARouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnetA
       RouteTableId: !Ref PublicRouteTable
+
 # Create Public Subnet C
   PublicSubnetC:
     Type: AWS::EC2::Subnet
     Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref APVPC
+      CidrBlock: 192.168.1.0/24
       MapPublicIpOnLaunch: 'true'
       AvailabilityZone: "ap-northeast-1c"
       Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"PublicSunetC" ] ]
+        - Key: Name
+          Value: !Join [ "-", [ "ap" ,"PublicSubnetC" ] ]
   PubSubnetCRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref PublicSubnetC
       RouteTableId: !Ref PublicRouteTable
-# Create Private Subnet A
-  PrivateSubnetA:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: 10.0.10.0/24
-      AvailabilityZone: "ap-northeast-1a"
-      Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"PrivateSubnetA" ] ]
-  PriSubnetARouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetA
-      RouteTableId: !Ref PrivateRouteTable
-# Create Private Subnet C
-  PrivateSubnetC:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref MyVPC
-      CidrBlock: 10.0.11.0/24
-      AvailabilityZone: "ap-northeast-1c"
-      Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"PrivateSubnetC" ] ]
-  PriSubnetCRouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnetC
-      RouteTableId: !Ref PrivateRouteTable
+
 # Create InternetGateway
-  myInternetGateway:
+  APInternetGateway:
     Type: "AWS::EC2::InternetGateway"
     Properties:
       Tags:
-      - Key: Name
-        Value: !Join [ "-", [ "cfn" ,"igw" ] ]
+        - Key: Name
+          Value: !Join [ "-", [ "ap" ,"igw" ] ]
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
-      VpcId: !Ref MyVPC
-      InternetGatewayId: !Ref myInternetGateway
+      VpcId: !Ref APVPC
+      InternetGatewayId: !Ref APInternetGateway
+
 # Route for InternetGateway or VPNGateway
-  myRoute:
+  APRoute:
     Type: AWS::EC2::Route
-    DependsOn: myInternetGateway
+    DependsOn: APInternetGateway
     Properties:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref myInternetGateway
-       
+      GatewayId: !Ref APInternetGateway
+
+# Security Groups for AP Batch Compute Environment
+  APSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref APVPC
+      GroupDescription: AP SecurityGroup
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: 22
+        IpProtocol: tcp
+        ToPort: 22
+
 #=======IAM========#
 # Create ecsInstanceRole
-  ecsInstanceRole:
+  APECSInstanceRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         ## start
         Version: '2012-10-17'
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - ec2.amazonaws.com
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service:
+              - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
         ## end
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-        - arn:aws:iam::aws:policy/AWSCodeCommitFullAccess
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
       Path: "/"
 # Set InstanceProfile
-  ecsInstanceProfile:
+  APECSInstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
     Properties:
       Roles:
-        - !Ref ecsInstanceRole
+        - !Ref APECSInstanceRole
  
 # Create AWSBatchServiceRole
-  AWSBatchServiceRole:
+  APBatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
         ## start
         Version: '2012-10-17'
         Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - batch.amazonaws.com
-          Action:
-          - sts:AssumeRole
+          - Effect: Allow
+            Principal:
+              Service:
+              - batch.amazonaws.com
+            Action:
+            - sts:AssumeRole
         ## end
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
-      Path: "/service-role/"
+      Path: "/"
 ###
 ### ---ComputeEnvironment---
 ###
-  MyComputeEnv:
+  APComputeEnvironment:
     Type: "AWS::Batch::ComputeEnvironment"
     Properties:
       Type: MANAGED
-      #作成したIAMから取得
-      ServiceRole: !GetAtt AWSBatchServiceRole.Arn 
-      ComputeEnvironmentName: cfn-env
+      ServiceRole: !Ref APBatchServiceRole
+      ComputeEnvironmentName: ap-cf-compute-environment
       ComputeResources:
+        Ec2KeyPair: aws-ap
         MaxvCpus: 256
-        MinvCpus: 0
-        DesiredvCpus: 0
+        MinvCpus: 2
+        DesiredvCpus: 2
         SecurityGroupIds:
-          #作成したVPCから取得
-          - !GetAtt MyVPC.DefaultSecurityGroup
+          - !Ref APSecurityGroup
         Type: EC2
         Subnets:
-          #作成したVPCから取得
-          - !Ref PrivateSubnetA
           - !Ref PublicSubnetA
-        #作成したVPCから取得
-        InstanceRole: !GetAtt ecsInstanceProfile.Arn
+          - !Ref PublicSubnetC
+        #InstanceRole: !GetAtt APECSInstanceProfile.Arn
+        InstanceRole: !Ref APECSInstanceProfile
         InstanceTypes:
-          - optimal
-        Tags: {"Name": "Batch Instance - cfn test"}
+          - c4.large
+          - c4.xlarge
+        Tags: {"Name": "AP Batch Compute Environment"}
       State: ENABLED
