@@ -164,3 +164,9 @@ Resources:
           - c4.xlarge
         Tags: {"Name": "AP Batch Compute Environment"}
       State: ENABLED
+
+#========Outputs========#
+Outputs:
+  APComputeEnvironmentId:
+    Description: Id of APComputeEnvironment
+    Value: !Ref APComputeEnvironment

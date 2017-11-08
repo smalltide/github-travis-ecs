@@ -1,0 +1,22 @@
+###
+AWSTemplateFormatVersion: 2010-09-09
+Description: AWS Batch Job queues for AP
+###
+###---Resources:JobQueue---
+###
+Resources:
+  APJobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      ComputeEnvironmentOrder:
+        - Order: 1
+          ComputeEnvironment: ap-cf-compute-environment
+      State: ENABLED
+      Priority: 10
+      JobQueueName: ap-cf-queue
+
+#========Outputs========#
+Outputs:
+  APJobQueueId:
+    Description: Id of APJobQueue
+    Value: !Ref APJobQueue

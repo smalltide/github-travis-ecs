@@ -47,7 +47,7 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 
 ### AWS CloudFormation Build AP Environment 
 - [x] AWS CloudFormation create AP Compute environments
-- [ ] AWS CloudFormation create AP Job queues
+- [x] AWS CloudFormation create AP Job queues
 - [ ] AWS CloudFormation create AP Job definitions
 
 ### Travis CI Task List
@@ -244,11 +244,16 @@ AWS Lambda trigger AP Cron Job
 
 ## AWS CloudFormation Build AP Environment 
 - [x] AWS CloudFormation create AP Compute environments
-- [ ] AWS CloudFormation create AP Job queues
+- [x] AWS CloudFormation create AP Job queues
 - [ ] AWS CloudFormation create AP Job definitions
 
 AWS CloudFormation create AP Compute environments
 ```
   > cd cf
-  > aws cloudformation create-stack --stack-name ap-batch-compute-environment --template-body file://batch-env.yaml --capabilities CAPABILITY_IAM
+  > aws cloudformation create-stack --stack-name ap-batch-compute-environment --template-body file://ap-batch-env.yaml --capabilities CAPABILITY_IAM
+```
+AWS CloudFormation create AP Job queues
+```
+  > cd cf
+  > aws cloudformation create-stack --stack-name ap-batch-queue --template-body file://ap-batch-queue.yaml
 ```
