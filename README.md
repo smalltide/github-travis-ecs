@@ -251,5 +251,5 @@ AWS CloudFormation create AP Compute Environments and AP Job Queues
 ```
 AWS CloudFormation create AP Job Definitions
 ```
-  > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml
+  > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml --parameters file://parameters.json
 ```

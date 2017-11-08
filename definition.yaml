@@ -1,15 +1,27 @@
 ###
 AWSTemplateFormatVersion: 2010-09-09
-Description: AP0001 Job definitions 
+Description: AP Job definitions 
+
+###
+###---Parameters---
+###
+Parameters:
+  APName:
+    Type: String
+    Description: AP Job Definition Name
+  Queue:
+    Type: String
+    Description: AP Job Queue Name
+
 ###
 ###---Resources:JobDefinition---
 ###
 Resources:
-  AP0001:
+  APJobDefinition:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
-      JobDefinitionName: AP0001
+      JobDefinitionName: !Ref APName
       ContainerProperties:
         Image: 282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest
         Vcpus: 1
@@ -20,17 +32,17 @@ Resources:
       RetryStrategy:
         Attempts: 1
 
-#========CloudWatch Rules Schedule========#
+  #========CloudWatch Rules Schedule========#
   Cron: 
     Type: AWS::Events::Rule
     Properties: 
-      Description: AP0001-Cron
+      Description: !Sub "${APName}-Cron"
       ScheduleExpression: cron(0/1 * * * ? *)
       State: "ENABLED"
       Targets: 
-        - Id: AP0001-TriggerBatchAPJob
+        - Id: !Sub "${APName}-TriggerBatchAPJob"
           Arn: arn:aws:lambda:ap-northeast-1:282921537141:function:TriggerBatchAPJob
-          Input: "{\"jobDefinition\": \"AP0001\", \"jobQueue\": \"APJobQueue\"}"
+          Input: !Sub "{\"jobDefinition\": \"${APName}\", \"jobQueue\": \"${Queue}\"}"
 
   PermissionForTriggerBatchAPJob: 
     Type: "AWS::Lambda::Permission"
@@ -42,12 +54,12 @@ Resources:
 
 #========Outputs========#
 Outputs:
-  AP0001Id:
-    Description: AP0001 JobDefinition
-    Value: !Ref AP0001
-  CronId:
-    Description: AP0001 CloudWatch Rules Schedule
+  APJobDefinition:
+    Description: AP Job Definition
+    Value: !Ref APJobDefinition
+  Cron:
+    Description: AP CloudWatch Rules Schedule
     Value: !Ref Cron
-  PermissionId: 
-    Description: AP0001 CloudWatch TriggerBatchAPJob Permission
+  Permission: 
+    Description: AP CloudWatch TriggerBatchAPJob Permission
     Value: !Ref PermissionForTriggerBatchAPJob
