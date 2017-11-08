@@ -20,8 +20,34 @@ Resources:
       RetryStrategy:
         Attempts: 1
 
+#========CloudWatch Rules Schedule========#
+  Cron: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: AP0001-Cron
+      ScheduleExpression: cron(0/1 * * * ? *)
+      State: "ENABLED"
+      Targets: 
+        - Id: AP0001-TriggerBatchAPJob
+          Arn: arn:aws:lambda:ap-northeast-1:282921537141:function:TriggerBatchAPJob
+          Input: "{\"jobDefinition\": \"AP0001\", \"jobQueue\": \"APJobQueue\"}"
+
+  PermissionForTriggerBatchAPJob: 
+    Type: "AWS::Lambda::Permission"
+    Properties: 
+      FunctionName: TriggerBatchAPJob
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt Cron.Arn
+
 #========Outputs========#
 Outputs:
   AP0001Id:
-    Description: Id of AP0001 JobDefinition
+    Description: AP0001 JobDefinition
     Value: !Ref AP0001
+  CronId:
+    Description: AP0001 CloudWatch Rules Schedule
+    Value: !Ref Cron
+  PermissionId: 
+    Description: AP0001 CloudWatch TriggerBatchAPJob Permission
+    Value: !Ref PermissionForTriggerBatchAPJob
