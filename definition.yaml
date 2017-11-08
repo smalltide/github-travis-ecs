@@ -1,15 +1,15 @@
 ###
 AWSTemplateFormatVersion: 2010-09-09
-Description: ap0001 Job definitions 
+Description: AP0001 Job definitions 
 ###
 ###---Resources:JobDefinition---
 ###
 Resources:
-  AP0001JobDefinition:
+  AP0001:
     Type: AWS::Batch::JobDefinition
     Properties:
       Type: container
-      JobDefinitionName: ap0001-cf
+      JobDefinitionName: AP0001
       ContainerProperties:
         Image: 282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest
         Vcpus: 1
@@ -22,6 +22,6 @@ Resources:
 
 #========Outputs========#
 Outputs:
-  AP0001JobDefinitionId:
-    Description: Id of AP0001JobDefinition
-    Value: !Ref AP0001JobDefinition
+  AP0001Id:
+    Description: Id of AP0001 JobDefinition
+    Value: !Ref AP0001

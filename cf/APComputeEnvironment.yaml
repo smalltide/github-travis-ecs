@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Build AWS Batch environment
+Description: Build AP AWS Batch Environment
  
 #========VPC========#
 Resources:
@@ -13,7 +13,7 @@ Resources:
       InstanceTenancy: default
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ "ap" ,"vpc" ] ]
+          Value: !Join [ "-", [ "AP" ,"VPC" ] ]
         
 # Create Public RouteTable
   PublicRouteTable:
@@ -22,7 +22,7 @@ Resources:
       VpcId: !Ref APVPC
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ "ap" ,"public-route" ] ]
+          Value: !Join [ "-", [ "AP" ,"PublicRoute" ] ]
 
 # Create Public Subnet A
   PublicSubnetA:
@@ -34,7 +34,7 @@ Resources:
       AvailabilityZone: "ap-northeast-1a"
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ "ap" ,"PublicSubnetA" ] ]
+          Value: !Join [ "-", [ "AP" ,"PublicSubnetA" ] ]
   PubSubnetARouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -51,7 +51,7 @@ Resources:
       AvailabilityZone: "ap-northeast-1c"
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ "ap" ,"PublicSubnetC" ] ]
+          Value: !Join [ "-", [ "AP" ,"PublicSubnetC" ] ]
   PubSubnetCRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
@@ -64,7 +64,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ "ap" ,"igw" ] ]
+          Value: !Join [ "-", [ "AP" ,"InternetGateway" ] ]
   AttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
@@ -110,7 +110,7 @@ Resources:
         ## end
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
       Path: "/"
 # Set InstanceProfile
   APECSInstanceProfile:
@@ -145,10 +145,10 @@ Resources:
     Properties:
       Type: MANAGED
       ServiceRole: !Ref APBatchServiceRole
-      ComputeEnvironmentName: ap-cf-compute-environment
+      ComputeEnvironmentName: APComputeEnvironment
       ComputeResources:
         Ec2KeyPair: aws-ap
-        MaxvCpus: 256
+        MaxvCpus: 128
         MinvCpus: 2
         DesiredvCpus: 2
         SecurityGroupIds:
@@ -165,8 +165,22 @@ Resources:
         Tags: {"Name": "AP Batch Compute Environment"}
       State: ENABLED
 
+###---Resources:JobQueue---
+  APJobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      ComputeEnvironmentOrder:
+        - Order: 1
+          ComputeEnvironment: !Ref APComputeEnvironment
+      State: ENABLED
+      Priority: 10
+      JobQueueName: APJobQueue
+
 #========Outputs========#
 Outputs:
   APComputeEnvironmentId:
     Description: Id of APComputeEnvironment
     Value: !Ref APComputeEnvironment
+  APJobQueueId:
+    Description: Id of APJobQueue
+    Value: !Ref APJobQueue

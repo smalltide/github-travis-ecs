@@ -44,11 +44,9 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 ### AWS Lambda Trigger Cronjob
 - [x] CloudWatch schedule event config(cron)
 - [x] AWS Lambda trigger AP Cron Job
-
 ### AWS CloudFormation Build AP Environment 
-- [x] AWS CloudFormation create AP Compute environments
-- [x] AWS CloudFormation create AP Job queues
-- [x] AWS CloudFormation create AP Job definitions
+- [x] AWS CloudFormation create AP Compute Environments and AP Job Queues
+- [x] AWS CloudFormation create AP Job Definitions
 
 ### Travis CI Task List
 - [ ] Integration Github and Travis CI
@@ -243,21 +241,15 @@ AWS Lambda trigger AP Cron Job
 ```
 
 ## AWS CloudFormation Build AP Environment 
-- [x] AWS CloudFormation create AP Compute environments
-- [x] AWS CloudFormation create AP Job queues
-- [x] AWS CloudFormation create AP Job definitions
+- [x] AWS CloudFormation create AP Compute Environments and AP Job Queues
+- [x] AWS CloudFormation create AP Job Definitions
 
-AWS CloudFormation create AP Compute environments
+AWS CloudFormation create AP Compute Environments and AP Job Queues
 ```
   > cd cf
-  > aws cloudformation create-stack --stack-name ap-batch-compute-environment --template-body file://ap-batch-env.yaml --capabilities CAPABILITY_IAM
+  > aws cloudformation create-stack --stack-name APComputeEnvironment --template-body file://APComputeEnvironment.yaml --capabilities CAPABILITY_IAM
 ```
-AWS CloudFormation create AP Job queues
+AWS CloudFormation create AP Job Definitions
 ```
-  > cd cf
-  > aws cloudformation create-stack --stack-name ap-batch-queue --template-body file://ap-batch-queue.yaml
-```
-AWS CloudFormation create AP Job definitions
-```
-  > aws cloudformation create-stack --stack-name AP0001-Definition --template-body file://definition.yaml
+  > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml
 ```
