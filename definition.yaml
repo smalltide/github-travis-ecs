@@ -23,7 +23,7 @@ Resources:
       Type: container
       JobDefinitionName: !Ref APName
       ContainerProperties:
-        Image: 282921537141.dkr.ecr.ap-northeast-1.amazonaws.com/ap/ap0001:latest
+        Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/ap/${APName}:latest
         Vcpus: 1
         Memory: 1024
         Command: []
@@ -41,7 +41,7 @@ Resources:
       State: "ENABLED"
       Targets: 
         - Id: !Sub "${APName}-TriggerBatchAPJob"
-          Arn: arn:aws:lambda:ap-northeast-1:282921537141:function:TriggerBatchAPJob
+          Arn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:TriggerBatchAPJob
           Input: !Sub "{\"jobDefinition\": \"${APName}\", \"jobQueue\": \"${Queue}\"}"
 
   PermissionForTriggerBatchAPJob: 

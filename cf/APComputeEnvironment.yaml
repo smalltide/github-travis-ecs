@@ -87,31 +87,30 @@ Resources:
       VpcId: !Ref APVPC
       GroupDescription: AP SecurityGroup
       SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
-        FromPort: 22
-        IpProtocol: tcp
-        ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
 
 #=======IAM========#
 # Create ecsInstanceRole
   APECSInstanceRole:
     Type: AWS::IAM::Role
     Properties:
+      Path: "/"
       AssumeRolePolicyDocument:
-        ## start
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
               Service:
-              - ec2.amazonaws.com
+                - ec2.amazonaws.com
             Action:
-              - sts:AssumeRole
-        ## end
+                - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
-      Path: "/"
+
 # Set InstanceProfile
   APECSInstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
@@ -123,20 +122,58 @@ Resources:
   APBatchServiceRole:
     Type: AWS::IAM::Role
     Properties:
+      Path: "/"  
       AssumeRolePolicyDocument:
-        ## start
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
               Service:
-              - batch.amazonaws.com
+                - batch.amazonaws.com
             Action:
-            - sts:AssumeRole
-        ## end
+              - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
-      Path: "/"
+     
+# Create AWSBatchServiceRole
+  APLambdaBatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"    
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/TriggerBatchAPJob:*
+        - PolicyName: LambdaSubmitBatchJob
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - batch:DescribeJobs
+                  - batch:ListJobs
+                  - batch:SubmitJob
+                Resource: "*"
+
 ###
 ### ---ComputeEnvironment---
 ###
