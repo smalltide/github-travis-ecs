@@ -7,7 +7,7 @@ Resources:
   APVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 192.168.0.0/22
+      CidrBlock: 192.168.0.0/20
       EnableDnsSupport: 'true'
       EnableDnsHostnames: 'true'
       InstanceTenancy: default
@@ -92,6 +92,10 @@ Resources:
           IpProtocol: tcp
           ToPort: 22
 
+# S3 Bucket for AP Batch Compute Environment
+  APS3Bucket:
+    Type: AWS::S3::Bucket
+
 #=======IAM========#
 # Create ecsInstanceRole
   APECSInstanceRole:
@@ -109,7 +113,6 @@ Resources:
                 - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
-        - arn:aws:iam::aws:policy/AmazonS3FullAccess
 
 # Set InstanceProfile
   APECSInstanceProfile:
@@ -134,45 +137,6 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
-     
-# Create AWSBatchServiceRole
-  APLambdaBatchRole:
-    Type: AWS::IAM::Role
-    Properties:
-      Path: "/"    
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Policies:
-        - PolicyName: LambdaExecutionRole
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/TriggerBatchAPJob:*
-        - PolicyName: LambdaSubmitBatchJob
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - batch:DescribeJobs
-                  - batch:ListJobs
-                  - batch:SubmitJob
-                Resource: "*"
 
 ###
 ### ---ComputeEnvironment---
@@ -194,7 +158,6 @@ Resources:
         Subnets:
           - !Ref PublicSubnetA
           - !Ref PublicSubnetC
-        #InstanceRole: !GetAtt APECSInstanceProfile.Arn
         InstanceRole: !Ref APECSInstanceProfile
         InstanceTypes:
           - c4.large
@@ -215,9 +178,14 @@ Resources:
 
 #========Outputs========#
 Outputs:
-  APComputeEnvironmentId:
+  APComputeEnvironment:
     Description: Id of APComputeEnvironment
     Value: !Ref APComputeEnvironment
-  APJobQueueId:
+  APJobQueue:
     Description: Id of APJobQueue
     Value: !Ref APJobQueue
+  APS3Bucket:
+    Description: Id of APS3Bucket
+    Value: !GetAtt APS3Bucket.Arn
+    Export:
+      Name: APS3Bucket

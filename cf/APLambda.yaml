@@ -1,0 +1,106 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Build AWS Lambda to Trigger AP Batch Job
+
+Resources:
+# Create AWSBatchServiceRole
+  LambdaBatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"    
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/TriggerBatchAPJob:*
+        - PolicyName: LambdaSubmitBatchJob
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - batch:DescribeJobs
+                  - batch:ListJobs
+                  - batch:SubmitJob
+                Resource: "*"
+  
+# Create AWS Lambda to Trigger AP Batch Job
+  TriggerBatchAPJob:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: TriggerBatchAPJob
+      Description: Receive Cron rules from CloudWatch and submit AP Job to AWS Batch Queue
+      Role: !GetAtt LambdaBatchRole.Arn
+      Handler: index.lambda_handler
+      Runtime: python2.7
+      MemorySize: 128
+      Timeout: 30
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import json
+          import boto3
+          print('Loading function')
+          batch = boto3.client('batch')
+          def lambda_handler(event, context):
+              # Log the received event
+              print('Received event: ' + json.dumps(event, indent=2))
+              
+              jobName = event['jobDefinition']
+              jobDefinition = event['jobDefinition']
+              jobQueue = event['jobQueue']
+              
+              # containerOverrides and parameters are optional
+              if event.get('containerOverrides'):
+                  containerOverrides = event['containerOverrides']
+              else:
+                  containerOverrides = {}
+              if event.get('parameters'):
+                  parameters = event['parameters']
+              else:
+                  parameters = {}
+
+              try:
+                  # Submit a Batch Job
+                  response = batch.submit_job(jobQueue=jobQueue, jobName=jobName, jobDefinition=jobDefinition,
+                                              containerOverrides=containerOverrides, parameters=parameters)
+                  # Log response from AWS Batch
+                  print('Response: ' + json.dumps(response, indent=2))
+                  # Return the jobId
+                  jobId = response['jobId']
+                  return {
+                      'jobId': jobId
+                  }
+              except Exception as e:
+                  print(e)
+                  message = 'Error submitting Batch Job'
+                  print(message)
+                  raise Exception(message)
+
+#========Outputs========#
+Outputs:
+  LambdaBatchRole:
+    Description: Id of LambdaBatchRole
+    Value: !GetAtt LambdaBatchRole.Arn
+  TriggerBatchAPJob:
+    Description: Id of TriggerBatchAPJob
+    Value: !GetAtt TriggerBatchAPJob.Arn
+    Export:
+      Name: TriggerBatchAPJob

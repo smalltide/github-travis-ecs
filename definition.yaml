@@ -26,6 +26,7 @@ Resources:
         Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/ap/${APName}:latest
         Vcpus: 1
         Memory: 1024
+        JobRoleArn: !GetAtt APJobRole.Arn
         Command: []
         Environment: []
         Ulimits: []
@@ -41,16 +42,39 @@ Resources:
       State: "ENABLED"
       Targets: 
         - Id: !Sub "${APName}-TriggerBatchAPJob"
-          Arn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:TriggerBatchAPJob
+          Arn: !ImportValue TriggerBatchAPJob
           Input: !Sub "{\"jobDefinition\": \"${APName}\", \"jobQueue\": \"${Queue}\"}"
 
   PermissionForTriggerBatchAPJob: 
     Type: "AWS::Lambda::Permission"
     Properties: 
-      FunctionName: TriggerBatchAPJob
+      FunctionName: !ImportValue TriggerBatchAPJob
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt Cron.Arn
+
+  APJobRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: 
+                - ecs-tasks.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: APPolicy
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                Resource: !ImportValue APS3Bucket
 
 #========Outputs========#
 Outputs:
@@ -63,3 +87,7 @@ Outputs:
   Permission: 
     Description: AP CloudWatch TriggerBatchAPJob Permission
     Value: !Ref PermissionForTriggerBatchAPJob
+  APJobRole:
+    Description: AP Job Role
+    Value: !Ref APJobRole
+    
