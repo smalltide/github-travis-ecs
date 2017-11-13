@@ -58,7 +58,7 @@ Resources:
     Properties:
       Path: /
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Principal:
@@ -69,12 +69,16 @@ Resources:
       Policies:
         - PolicyName: APPolicy
           PolicyDocument:
+            Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
                   - s3:GetObject
                   - s3:PutObject
-                Resource: !ImportValue APS3Bucket
+                Resource:
+                  Fn::Sub:
+                    - "${APS3Bucket}/*"
+                    - APS3Bucket: !ImportValue APS3Bucket
 
 #========Outputs========#
 Outputs:

@@ -9,7 +9,7 @@ COPY entrypoint.sh /
 
 WORKDIR $APP_PATH
 
-#RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["/entrypoint.sh"]
 
