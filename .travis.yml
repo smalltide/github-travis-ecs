@@ -1,15 +1,22 @@
 sudo: false
 dist: trusty
-
 jobs:
   include:
-    - stage: build ap docker image
-      script:
-        - docker build -t ap0001 .
-        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        - docker tag ap0001 $DOCKER_USERNAME/ap0001
-        - docker push $DOCKER_USERNAME/ap0001
-    - stage: run image tests
-      script: docker run --rm $DOCKER_USERNAME/ap0001
-    - stage: deploy docker image
-      script: skip
+  - stage: build ap docker image
+    script:
+    - docker build -t ap0002 .
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker tag ap0002 $DOCKER_USERNAME/ap0002
+    - docker push $DOCKER_USERNAME/ap0002
+  - stage: run image tests
+    script: echo "Test1 Finish"
+  - stage: deploy docker image
+    script: skip
+
+notifications:
+  slack:
+    on_pull_requests: true
+    rooms:
+      secure: dmaQH4TSJ6143GojCFoXF+HczueNOv8Kv/J4NAyexs9DHcodJBx7tj0hzqwSgHpraYHX/MzVr/4U/IJ2evWB/Y0pyava3tkfA/Nlsims6v0RgaMtqqHct2UCdNvR+jDj9+2EUKqu7R7oUzrqGX6aJYoDDaz2p2Q7tb4RcOn+2WGvH1rQRVB0kdr6cHpn0F18c7qsmlQuLWGCSww5wjBRVTUQm4ZpnSQ7+iBIofytt3dkI6JzCC7wdOlG9mdqM149lpdIHj3FgMXgtOmWtdVkZ/2cSVT/QwH2DrUn8BQj+ovFddUnkPdkxfbunxkcc/oNmnILOGv/PNuDPuT5o4Mm6rNId7NtIbCh9ztnbPIgAjtX2sjUFRs+eMVdibHh2dPtLEbBI1WZ8NBxsp1RFK5hvZpOY0zIsKGUIluWFfkLgdqbcURg2V7QxhBYIIoRBbc3dsdf6dX64Pg7Ue85kh32d85tyZMQXX6/FFrcRUhRPvU8J3ZdnnIc5R/dQWKV6C7ncp5KkVKxHbigKxKpXYUeIPOJYT7Hp0ezpStFcKCI1XsXIbxl8vMX0Xxeljm/SP5NulDPPMO+G8oTotKag15VON8BXaKjRhmAUmeIkKVVSUPP6DyPsAfywW7/Xs8pfi8whVcbbjXYbbIxtDRlECV3zONgiTEwDHK/HGgryZBx4ek=
+    on_success: always # default: always
+    on_failure: always # default: always
