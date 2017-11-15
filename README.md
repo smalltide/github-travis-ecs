@@ -1,4 +1,5 @@
 # github-travis-ecs
+![build status](https://api.travis-ci.org/smalltide/github-travis-ecs.svg?branch=master "build status")
 Use github and travis-ci to build docker image and push to AWS ECR, then use AWS ECS Cluster to run container service.
 
 ### Skills
