@@ -50,22 +50,14 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS CloudFormation create AP Job Definitions
 
 ### Travis CI Task List
-- [ ] Integration Github and Travis CI
+- [ ] Integration Github and Travis CI, use .travis.yml 
 - [ ] Push AP to GitHub
 - [ ] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
-### Travis CD Task List (Batch)
-- [ ] AWS Batch CLI create AP Job Definition
-- [ ] AWS Batch CLI schedule AP Job into Job Queue
-### Travis CD Task List (Lambda)
-- [ ] CloudWatch schedule event config(cron)
-- [ ] AWS Lambda trigger AP Cron Job
+### Travis CD Task List (Lambda Trigger Batch)
+- [ ] AWS CLI CloudFormation create AP Job Definitions
 ### Travis CD Task List (ECS)
-- [ ] AWS ECS CLI create AP Task Definition
-- [ ] AWS ECS CLI run-task to run container
-- [ ] AWS ECS CLI create-service to run container
-- [ ] AWS ECS CLI update-service to re-run container
-
+- [ ] AWS CLI CloudFormation create AP Job Definitions
 
 ## AWS Environment Config Task List
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
@@ -260,3 +252,8 @@ AWS CloudFormation create AP Job Definitions
 ```
   > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM
 ```
+### Travis CI Task List
+- [ ] Integration Github and Travis CI, use .travis.yml 
+- [ ] Push AP to GitHub
+- [ ] Travis CI build AP Docker Image
+- [ ] Travis CI push AP Docker Image to AWS ECR
