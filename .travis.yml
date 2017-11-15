@@ -1,15 +1,15 @@
-sudo: true
+sudo: false
 dist: trusty
 
 jobs:
   include:
-    - stage: run tests
-      script: echo "Finish Test 1"
     - stage: build ap docker image
       script:
-        - docker build -t ap/ap0001 .
+        - docker build -t ap0001 .
         - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        - docker tag ap/ap0001 $DOCKER_USERNAME/ap0001
+        - docker tag ap0001 $DOCKER_USERNAME/ap0001
         - docker push $DOCKER_USERNAME/ap0001
+    - stage: run image tests
+      script: docker run --rm $DOCKER_USERNAME/ap0001
     - stage: deploy docker image
       script: skip
