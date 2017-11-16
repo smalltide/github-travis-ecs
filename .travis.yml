@@ -19,7 +19,7 @@ jobs:
   - script: echo "Test2 Finish"
   - stage: deploy ap to aws batch
     script:
-      - aws cloudformation create-stack --stack-name $APName --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM
+      - skip
 
 notifications:
   slack:
