@@ -259,4 +259,5 @@ AWS CloudFormation create AP Job Definitions
 Integration Github and Travis CI, use .travis.yml 
 ```
   > travis encrypt "account:token#channel" --add notifications.slack.rooms
+  > aws cloudformation create-stack --stack-name $APName --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM (add in travis.yml deploy script part, if want to deploy AP)
 ```
