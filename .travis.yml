@@ -4,8 +4,9 @@ dist: trusty
 language: python
 
 before_install:
-  - pip install --user awscli
-  - export PATH=$PATH:$HOME/.local/bin
+  - pip --version
+  - pip install awscli
+  - aws --version
 
 jobs:
   include:
