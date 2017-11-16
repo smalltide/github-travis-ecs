@@ -10,12 +10,13 @@ jobs:
   include:
   - stage: build and push ap docker image to aws ecr
     script:
-      - eval $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - eval $(aws ecr get-login --no-include-email)
       - docker build -t $APName .
       - docker tag $APName:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ap/$APName:latest
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ap/$APName:latest
   - stage: run ap tests
     script: echo "Test1 Finish"
+  - script: echo "Test2 Finish"
   - stage: deploy ap to aws batch
     script:
       - aws cloudformation create-stack --stack-name $APName --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM

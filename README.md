@@ -49,16 +49,12 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 - [x] AWS CloudFormation create AP Compute Environments and AP Job Queues
 - [x] AWS CloudFormation create AWS Lambda to Trigger AP Batch Job
 - [x] AWS CloudFormation create AP Job Definitions
-
-### Travis CI Task List
-- [ ] Integration Github and Travis CI, use .travis.yml 
-- [ ] Push AP to GitHub
-- [ ] Travis CI build AP Docker Image
-- [ ] Travis CI push AP Docker Image to AWS ECR
-### Travis CD Task List (Lambda Trigger Batch)
-- [ ] AWS CLI CloudFormation create AP Job Definitions
-### Travis CD Task List (ECS)
-- [ ] AWS CLI CloudFormation create AP Job Definitions
+### Travis CI and CD Task List
+- [x] Integration Github and Travis CI, use .travis.yml 
+- [x] Travis CI build AP Docker Image
+- [x] Travis CI push AP Docker Image to AWS ECR
+- [x] AWS CLI CloudFormation create AP Job Definitions (Lambda Trigger Batch)
+- [ ] AWS CLI CloudFormation create AP Job Definitions (ECS)
 
 ## AWS Environment Config Task List
 - [x] AWS EC2 create Key Pairs for EC2 ssh login
@@ -256,7 +252,9 @@ AWS CloudFormation create AP Job Definitions
 ### Travis CI Task List
 - [x] Integration Github and Travis CI, use .travis.yml 
 - [x] Travis CI build AP Docker Image
-- [ ] Travis CI push AP Docker Image to AWS ECR
+- [x] Travis CI push AP Docker Image to AWS ECR
+- [x] AWS CLI CloudFormation create AP Job Definitions (Lambda Trigger Batch)
+- [ ] AWS CLI CloudFormation create AP Job Definitions (ECS)
 
 Integration Github and Travis CI, use .travis.yml 
 ```
