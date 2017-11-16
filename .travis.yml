@@ -18,9 +18,8 @@ jobs:
     script: echo "Test1 Finish"
   - script: echo "Test2 Finish"
   - stage: deploy ap to aws batch
-    script:
-      - skip
-
+    script: skip
+    
 notifications:
   slack:
     on_pull_requests: true
