@@ -1,13 +1,20 @@
 sudo: false
 dist: trusty
+
+language: python
+
+before_install:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
+
 jobs:
   include:
-  - stage: build ap docker image
+  - stage: build and push ap docker image
     script:
-    - docker build -t ap0002 .
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    - docker tag ap0002 $DOCKER_USERNAME/ap0002
-    - docker push $DOCKER_USERNAME/ap0002
+      - eval $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - docker build -t ap0002 .
+      - docker tag ap0002:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ap/ap0002:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ap/ap0002:latest
   - stage: run image tests
     script: echo "Test1 Finish"
   - stage: deploy docker image

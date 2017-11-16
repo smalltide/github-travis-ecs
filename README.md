@@ -1,5 +1,5 @@
 # github-travis-ecs
-![build status](https://api.travis-ci.org/smalltide/github-travis-ecs.svg?branch=master "build status")
+![build status](https://api.travis-ci.org/smalltide/github-travis-ecs.svg?branch=master "build status")  
 Use github and travis-ci to build docker image and push to AWS ECR, then use AWS ECS Cluster to run container service.
 
 ### Skills
@@ -9,7 +9,7 @@ Use github and travis-ci to build docker image and push to AWS ECR, then use AWS
 4. AWS
 5. AWS ECR
 6. AWS ECS
-7. AWS Btch
+7. AWS Batch
 8. AWS CloudWatch
 9. AWS Lambda
 10. AWS S3
@@ -254,7 +254,11 @@ AWS CloudFormation create AP Job Definitions
   > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM
 ```
 ### Travis CI Task List
-- [ ] Integration Github and Travis CI, use .travis.yml 
-- [ ] Push AP to GitHub
-- [ ] Travis CI build AP Docker Image
+- [x] Integration Github and Travis CI, use .travis.yml 
+- [x] Travis CI build AP Docker Image
 - [ ] Travis CI push AP Docker Image to AWS ECR
+
+Integration Github and Travis CI, use .travis.yml 
+```
+  > travis encrypt "account:token#channel" --add notifications.slack.rooms
+```
