@@ -1,10 +1,14 @@
 [
   {
     "ParameterKey": "APName",
-    "ParameterValue": "ap0002"
+    "ParameterValue": "ap0001"
   },
   {
     "ParameterKey": "Queue",
     "ParameterValue": "APJobQueue"
+  },
+  {
+    "ParameterKey": "CronTime",
+    "ParameterValue": "(0/1 * * * ? *)"
   }
 ]

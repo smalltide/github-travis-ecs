@@ -12,6 +12,9 @@ Parameters:
   Queue:
     Type: String
     Description: AP Job Queue Name
+  CronTime:
+    Type: String
+    Description: AP Job Cron Time
 
 ###
 ###---Resources:JobDefinition---
@@ -38,7 +41,7 @@ Resources:
     Type: AWS::Events::Rule
     Properties: 
       Description: !Sub "${APName}-Cron"
-      ScheduleExpression: cron(0/1 * * * ? *)
+      ScheduleExpression: !Sub "cron${CronTime}"
       State: "ENABLED"
       Targets: 
         - Id: !Sub "${APName}-TriggerBatchAPJob"
@@ -88,6 +91,9 @@ Outputs:
   Cron:
     Description: AP CloudWatch Rules Schedule
     Value: !Ref Cron
+  CronTime:
+    Description: AP Job Cron Time
+    Value: !Ref CronTime
   Permission: 
     Description: AP CloudWatch TriggerBatchAPJob Permission
     Value: !Ref PermissionForTriggerBatchAPJob
