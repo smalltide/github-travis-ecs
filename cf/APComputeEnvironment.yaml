@@ -188,8 +188,9 @@ Resources:
     Properties:
       Type: MANAGED
       ServiceRole: !Ref APBatchServiceRole
-      ComputeEnvironmentName: SPOTAPComputeEnvironment
+      ComputeEnvironmentName: SPOTAPComputeEnvironment201709j
       ComputeResources:
+        ImageId: ami-bb5f13dd
         Ec2KeyPair: aws-ap
         MaxvCpus: 128
         MinvCpus: 4
