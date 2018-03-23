@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Build AP AWS Batch Environment
+ 
+Resources:
+# S3 Bucket for AP Batch Compute Environment
+  APS3Bucket:
+    Type: AWS::S3::Bucket
+
+#=======IAM========#
+# Create ecsInstanceRole
+  APECSInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+                - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
+
+# Set InstanceProfile
+  APECSInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Roles:
+        - !Ref APECSInstanceRole
+ 
+# Create AWSBatchServiceRole
+  APBatchServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"  
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - batch.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole
+
+# Create APAmazonEC2SpotFleetTaggingRole
+  APAmazonEC2SpotFleetTaggingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: spotfleet.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole
+
+###
+### ---ComputeEnvironment---
+###
+
+# Create APComputeEnvironment
+  # APComputeEnvironment:
+  #   Type: "AWS::Batch::ComputeEnvironment"
+  #   Properties:
+  #     Type: MANAGED
+  #     ServiceRole: !Ref APBatchServiceRole
+  #     ComputeEnvironmentName: APComputeEnvironment
+  #     ComputeResources:
+  #       Ec2KeyPair: aws-ap
+  #       MaxvCpus: 128
+  #       MinvCpus: 2
+  #       DesiredvCpus: 2
+  #       SecurityGroupIds:
+  #         - !Ref APSecurityGroup
+  #       Type: EC2
+  #       Subnets:
+  #         - !Ref PublicSubnetA
+  #         - !Ref PublicSubnetC
+  #       InstanceRole: !Ref APECSInstanceProfile
+  #       InstanceTypes:
+  #         - c4.large
+  #         - c4.xlarge
+  #       Tags: {"Name": "AP Batch Compute Environment"}
+  #     State: ENABLED
+
+# Create SPOTAPComputeEnvironment
+  SPOTAPComputeEnvironment:
+    Type: "AWS::Batch::ComputeEnvironment"
+    Properties:
+      Type: MANAGED
+      ServiceRole: !Ref APBatchServiceRole
+      ComputeEnvironmentName: SPOTAPComputeEnvironment09acfc6f
+      ComputeResources:
+        ImageId: ami-09acfc6f
+        Ec2KeyPair: aws-ap
+        MaxvCpus: 128
+        MinvCpus: 4
+        DesiredvCpus: 4
+        SecurityGroupIds:
+          - sg-5198a828
+        Type: SPOT
+        BidPercentage: 100
+        SpotIamFleetRole: !Ref APAmazonEC2SpotFleetTaggingRole
+        Subnets:
+          - !ImportValue SN-private-1a-1-dev
+          - !ImportValue SN-private-1c-1-dev
+        InstanceRole: !Ref APECSInstanceProfile
+        InstanceTypes:
+          - m3.medium
+        Tags: {"Name": "AP SPOT Batch Compute Environment"}
+      State: ENABLED
+
+###---Resources:JobQueue---
+  APJobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      ComputeEnvironmentOrder:
+        - Order: 1
+          ComputeEnvironment: !Ref SPOTAPComputeEnvironment
+        # - Order: 2
+        #   ComputeEnvironment: !Ref APComputeEnvironment
+      State: ENABLED
+      Priority: 500
+      JobQueueName: APJobQueue
+
+#========Outputs========#
+Outputs:
+  # APComputeEnvironment:
+  #   Description: Id of APComputeEnvironment
+  #   Value: !Ref APComputeEnvironment
+  SPOTAPComputeEnvironment:
+    Description: Id of SPOTAPComputeEnvironment
+    Value: !Ref SPOTAPComputeEnvironment
+  APJobQueue:
+    Description: Id of APJobQueue
+    Value: !Ref APJobQueue
+  APS3Bucket:
+    Description: Id of APS3Bucket
+    Value: !GetAtt APS3Bucket.Arn
+    Export:
+      Name: APS3Bucket
