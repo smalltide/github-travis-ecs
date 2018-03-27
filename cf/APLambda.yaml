@@ -30,6 +30,13 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/TriggerBatchAPJob:*
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ap_jobs
         - PolicyName: LambdaSubmitBatchJob
           PolicyDocument:
             Version: '2012-10-17'
@@ -57,12 +64,16 @@ Resources:
           from __future__ import print_function
           import json
           import boto3
+          import time
+
           print('Loading function')
-          batch = boto3.client('batch')
+
           def lambda_handler(event, context):
               # Log the received event
               print('Received event: ' + json.dumps(event, indent=2))
               
+              batch = boto3.client('batch')
+
               jobName = event['jobDefinition']
               jobDefinition = event['jobDefinition']
               jobQueue = event['jobQueue']
@@ -85,14 +96,22 @@ Resources:
                   print('Response: ' + json.dumps(response, indent=2))
                   # Return the jobId
                   jobId = response['jobId']
-                  return {
-                      'jobId': jobId
-                  }
+          
+                  dynamodb = boto3.resource('dynamodb')
+                  table = dynamodb.Table('ap_jobs')
+                  timestamp = int(time.time())
+                  
+                  table.put_item(
+                      Item={
+                          'name': jobName,
+                          'timestamp': timestamp,
+                          'id': jobId,
+                          'log': 'UNKNOWN',
+                          'status': 'UNKNOWN'
+                      })
+
               except Exception as e:
                   print(e)
-                  message = 'Error submitting Batch Job'
-                  print(message)
-                  raise Exception(message)
 
 #========Outputs========#
 Outputs:
