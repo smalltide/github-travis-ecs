@@ -1,0 +1,2 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Build BatchAPJobStatusChanged lambda to process Batch AP Job Status Change

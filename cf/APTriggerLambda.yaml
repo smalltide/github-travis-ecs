@@ -107,9 +107,11 @@ Resources:
                           'timestamp': timestamp,
                           'id': jobId,
                           'log': 'UNKNOWN',
-                          'status': 'UNKNOWN'
+                          'status': 'UNKNOWN',
+                          'starting_timestamp': 0,
+                          'finish_timestamp': 0,
+                          'elapse_time': 0
                       })
-
               except Exception as e:
                   print(e)
 

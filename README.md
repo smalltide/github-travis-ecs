@@ -238,12 +238,12 @@ AWS Lambda trigger AP Cron Job
 AWS CloudFormation create AP Compute Environments and AP Job Queues
 ```
   > cd cf
-  > aws cloudformation create-stack --stack-name APComputeEnvironment --template-body file://APComputeEnvironment.yaml --capabilities CAPABILITY_IAM
+  > aws cloudformation create-stack --stack-name PrivateAPComputeEnvironment --template-body file://PrivateAPComputeEnvironment.yaml --capabilities CAPABILITY_IAM
 ```
 AWS CloudFormation create AWS Lambda to Trigger AP Batch Job
 ```
   > cd cf 
-  > aws cloudformation create-stack --stack-name APLambda --template-body file://APLambda.yaml --capabilities CAPABILITY_IAM
+  > aws cloudformation create-stack --stack-name APTriggerLambda --template-body file://APTriggerLambda.yaml --capabilities CAPABILITY_IAM
 ```
 AWS CloudFormation create AP Job Definitions
 ```
