@@ -92,6 +92,8 @@ Resources:
                   # Submit a Batch Job
                   response = batch.submit_job(jobQueue=jobQueue, jobName=jobName, jobDefinition=jobDefinition,
                                               containerOverrides=containerOverrides, parameters=parameters)
+                  timestamp = int(time.time())
+                  
                   # Log response from AWS Batch
                   print('Response: ' + json.dumps(response, indent=2))
                   # Return the jobId
@@ -99,7 +101,6 @@ Resources:
           
                   dynamodb = boto3.resource('dynamodb')
                   table = dynamodb.Table('ap_jobs')
-                  timestamp = int(time.time())
                   
                   table.put_item(
                       Item={
@@ -107,7 +108,7 @@ Resources:
                           'timestamp': timestamp,
                           'id': jobId,
                           'log': 'UNKNOWN',
-                          'status': 'UNKNOWN',
+                          'status': 'SUBMITTED',
                           'starting_timestamp': 0,
                           'finish_timestamp': 0,
                           'elapse_time': 0
