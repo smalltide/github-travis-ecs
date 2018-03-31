@@ -1,2 +1,143 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Build BatchAPJobStatusChanged lambda to process Batch AP Job Status Change
+
+Resources:
+# Create AWSBatchServiceRole
+  LambdaBatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: "/"    
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LambdaExecutionRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/BatchAPJobStatusChanged:*
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ap_jobs
+  
+# Create AWS Lambda to Process Batch AP Job Status Change
+  BatchAPJobStatusChanged:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: BatchAPJobStatusChanged
+      Description: Process Batch AP Job Status Change
+      Role: !GetAtt LambdaBatchRole.Arn
+      Handler: index.lambda_handler
+      Runtime: python2.7
+      MemorySize: 128
+      Timeout: 30
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import json
+          import boto3
+          from boto3.dynamodb.conditions import Key, Attr
+          import time
+
+          print('Loading function')
+
+
+          def lambda_handler(event, context):
+              if event['source'] != 'aws.batch':
+                  raise ValueError(
+                      'Function only supports input from events with a source type of: aws.batch'
+                  )
+
+              detail = event['detail']
+
+              if 'jobId' in detail:
+                  job_name = detail['jobName']
+                  job_id = detail['jobId']
+                  job_status = detail['status']
+
+                  dynamodb = boto3.resource('dynamodb')
+                  ap_jobs = dynamodb.Table('ap_jobs')
+
+                  print('Job Run Status: ' + job_name + ', ' + job_id + ', ' + job_status)
+
+                  if job_status == 'PENDING' or job_status == 'RUNNABLE' or job_status == 'STARTING':
+                      response = ap_jobs.update_item(
+                          Key={'name': job_name,
+                              'id': job_id},
+                          UpdateExpression='set #sts = :val1',
+                          ExpressionAttributeValues={
+                              ':val1': job_status,
+                          },
+                          ExpressionAttributeNames={
+                              '#sts': 'status',
+                          },
+                          ReturnValues='UPDATED_NEW')
+                  elif job_status == 'RUNNING':
+                      log = detail['container']['logStreamName']
+                      starting_timestamp = detail['startedAt'] / 1000
+
+                      response = ap_jobs.update_item(
+                          Key={'name': job_name,
+                              'id': job_id},
+                          UpdateExpression='set #sts = :val1, #lg = :val2, #stp = :val3',
+                          ExpressionAttributeValues={
+                              ':val1': job_status,
+                              ':val2': log,
+                              ':val3': starting_timestamp,
+                          },
+                          ExpressionAttributeNames={
+                              '#sts': 'status',
+                              '#lg': 'log',
+                              '#stp': 'starting_timestamp'
+                          },
+                          ReturnValues='UPDATED_NEW')
+
+                  elif job_status == 'SUCCEEDED' or job_status == 'FAILED':
+                      starting_timestamp = detail['startedAt'] / 1000
+                      finish_timestamp = detail['stoppedAt'] / 1000
+                      elapse_time = finish_timestamp - starting_timestamp
+
+                      response = ap_jobs.update_item(
+                          Key={'name': job_name,
+                              'id': job_id},
+                          UpdateExpression='set #sts = :val1, #ftp = :val2, #et = :val3',
+                          ExpressionAttributeValues={
+                              ':val1': job_status,
+                              ':val2': finish_timestamp,
+                              ':val3': elapse_time,
+                          },
+                          ExpressionAttributeNames={
+                              '#sts': 'status',
+                              '#ftp': 'finish_timestamp',
+                              '#et': 'elapse_time'
+                          },
+                          ReturnValues='UPDATED_NEW')
+              
+#========Outputs========#
+Outputs:
+  LambdaBatchRole:
+    Description: Id of LambdaBatchRole
+    Value: !GetAtt LambdaBatchRole.Arn
+  BatchAPJobStatusChanged:
+    Description: Id of BatchAPJobStatusChanged
+    Value: !GetAtt BatchAPJobStatusChanged.Arn
+    Export:
+      Name: BatchAPJobStatusChanged

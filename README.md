@@ -245,6 +245,11 @@ AWS CloudFormation create AWS Lambda to Trigger AP Batch Job
   > cd cf 
   > aws cloudformation create-stack --stack-name APTriggerLambda --template-body file://APTriggerLambda.yaml --capabilities CAPABILITY_IAM
 ```
+AWS CloudFormation create AWS Lambda to Process Batch AP Job Status Change
+```
+  > cd cf 
+  > aws cloudformation create-stack --stack-name APStatusLambda --template-body file://APStatusLambda.yaml --capabilities CAPABILITY_IAM
+```
 AWS CloudFormation create AP Job Definitions
 ```
   > aws cloudformation create-stack --stack-name AP0001 --template-body file://definition.yaml --parameters file://parameters.json --capabilities CAPABILITY_IAM

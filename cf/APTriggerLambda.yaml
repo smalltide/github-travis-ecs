@@ -89,11 +89,12 @@ Resources:
                   parameters = {}
 
               try:
+                  timestamp = int(time.time())
+
                   # Submit a Batch Job
                   response = batch.submit_job(jobQueue=jobQueue, jobName=jobName, jobDefinition=jobDefinition,
                                               containerOverrides=containerOverrides, parameters=parameters)
-                  timestamp = int(time.time())
-                  
+
                   # Log response from AWS Batch
                   print('Response: ' + json.dumps(response, indent=2))
                   # Return the jobId
