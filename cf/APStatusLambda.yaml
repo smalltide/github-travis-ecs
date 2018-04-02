@@ -111,9 +111,9 @@ Resources:
                           ReturnValues='UPDATED_NEW')
 
                   elif job_status == 'SUCCEEDED' or job_status == 'FAILED':
-                      starting_timestamp = detail['startedAt'] / 1000
-                      finish_timestamp = detail['stoppedAt'] / 1000
-                      elapse_time = finish_timestamp - starting_timestamp
+                      starting_timestamp = detail['startedAt'] / 1000 if 'startedAt' in detail else 0
+                      finish_timestamp = detail['stoppedAt'] / 1000 if 'stoppedAt' in detail else int(time.time())
+                      elapse_time = finish_timestamp - starting_timestamp if starting_timestamp > 0 else 0
 
                       response = ap_jobs.update_item(
                           Key={'name': job_name,
