@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Create DB resource of AP AWS Batch Environment
+
+Resources:
+  APJobTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      TableName: "ap_jobs"
+      AttributeDefinitions: 
+        - AttributeName: "name"
+          AttributeType: "S"
+        - AttributeName: "id"
+          AttributeType: "S"
+        - AttributeName: "timestamp"
+          AttributeType: "N"
+      KeySchema: 
+        - AttributeName: "name"
+          KeyType: "HASH"
+        - AttributeName: "id"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "5"
+        WriteCapacityUnits: "5"
+      LocalSecondaryIndexes: 
+        - IndexName: "name-timestamp-index"
+          KeySchema: 
+            - AttributeName: "name"
+              KeyType: "HASH"
+            - AttributeName: "timestamp"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: "ALL"
