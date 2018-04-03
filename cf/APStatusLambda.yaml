@@ -130,7 +130,33 @@ Resources:
                               '#et': 'elapse_time'
                           },
                           ReturnValues='UPDATED_NEW')
-              
+
+
+
+#========Batch AP Job Status Event========#  
+  BatchJobEvent: 
+    Type: AWS::Events::Rule
+    Properties: 
+      Description: "When Batch AP Job Status Change send event to BatchAPJobStatusChanged Lambda"
+      State: "ENABLED"
+      EventPattern:
+        source:
+          - "aws.batch"
+        detail-type: 
+          - "Batch Job State Change"
+      Targets: 
+        - Id: "BatchAPJobStatusChanged"
+          Arn: !GetAtt BatchAPJobStatusChanged.Arn
+
+  PermissionForBatchAPJobStatusChanged: 
+    Type: "AWS::Lambda::Permission"
+    Properties: 
+      FunctionName: !Ref BatchAPJobStatusChanged
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt BatchJobEvent.Arn
+
+
 #========Outputs========#
 Outputs:
   LambdaBatchRole:
