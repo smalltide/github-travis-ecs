@@ -13,6 +13,10 @@ Resources:
           AttributeType: "S"
         - AttributeName: "timestamp"
           AttributeType: "N"
+        - AttributeName: "status"
+          AttributeType: "S"
+        - AttributeName: "elapse_time"
+          AttributeType: "N"
       KeySchema: 
         - AttributeName: "name"
           KeyType: "HASH"
@@ -27,6 +31,22 @@ Resources:
             - AttributeName: "name"
               KeyType: "HASH"
             - AttributeName: "timestamp"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: "ALL"
+        - IndexName: "name-status-index"
+          KeySchema: 
+            - AttributeName: "name"
+              KeyType: "HASH"
+            - AttributeName: "status"
+              KeyType: "RANGE"
+          Projection: 
+            ProjectionType: "ALL"
+        - IndexName: "name-elapse_time-index"
+          KeySchema: 
+            - AttributeName: "name"
+              KeyType: "HASH"
+            - AttributeName: "elapse_time"
               KeyType: "RANGE"
           Projection: 
             ProjectionType: "ALL"
